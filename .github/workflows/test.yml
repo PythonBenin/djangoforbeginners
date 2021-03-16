@@ -5,6 +5,12 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        db: sqlite
+        python-version: 3.8
+
     steps:
       - uses: actions/checkout@v2
 
@@ -19,4 +25,10 @@ jobs:
       - run: isort . skip=venv
       - run: black . --exclude=venv
       - run: flake8 --exclude=venv
-      - run: python manage.py test
+
+      - name: Run Tests
+      env:
+        DB: ${{ matrix.db }}
+        DB_HOST: 127.0.0.1
+      run: |
+        python manage.py test
