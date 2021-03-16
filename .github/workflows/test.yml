@@ -1,0 +1,22 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies with pip
+        run: pip install -r requirements.txt
+
+      - run: isort . skip=venv
+      - run: black . --exclude=venv
+      - run: flake8 --exclude=venv
+      - run: python manage.py test
